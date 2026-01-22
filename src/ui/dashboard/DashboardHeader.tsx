@@ -5,6 +5,9 @@ const formatNumber = (value: number) =>
   new Intl.NumberFormat("en-US").format(value);
 
 export default function DashboardHeader() {
+  const potentialVoters = 28450;
+  const projectedVotes = 9320;
+
   return (
     <header className="border-b border-[color:var(--border)] bg-[color:var(--card)] shadow-[0_8px_20px_-16px_rgba(15,23,42,0.16)]">
       <div className="flex w-full flex-col gap-2 px-2 py-2 md:flex-row md:items-center md:gap-5 md:px-6">
@@ -32,7 +35,7 @@ export default function DashboardHeader() {
             En crecimiento
           </span>
         </div>
-        <div className="flex w-full flex-col gap-3 md:ml-5 md:w-[260px] md:flex-none">
+        <div className="flex w-full flex-col gap-3 md:ml-5 md:w-auto md:flex-none md:flex-row">
           <div className="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color:var(--text-1)]">
               Objetivo
@@ -44,6 +47,17 @@ export default function DashboardHeader() {
               </span>
             </p>
             <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-[color:var(--surface-strong)]" />
+          </div>
+          <div className="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color:var(--text-1)]">
+              Potenciales votantes
+            </p>
+            <p className="mt-2 text-xl font-semibold text-[color:var(--text-1)]">
+              {formatNumber(potentialVoters)}
+            </p>
+            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--text-2)]">
+              Votos {formatNumber(projectedVotes)}
+            </p>
           </div>
         </div>
       </div>

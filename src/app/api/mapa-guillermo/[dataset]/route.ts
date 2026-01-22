@@ -1,12 +1,12 @@
 import { readFile } from "fs/promises";
 import path from "path";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(
-  _request: Request,
-  context: { params: { dataset: string } },
+  _request: NextRequest,
+  context: { params: Promise<{ dataset: string }> },
 ) {
-  const raw = context.params.dataset;
+  const { dataset: raw } = await context.params;
   const normalized = decodeURIComponent(raw)
     .replace(/\.geojson$/i, "")
     .replace(/[^a-z0-9_-]/gi, "");

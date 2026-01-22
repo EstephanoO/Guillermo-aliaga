@@ -88,8 +88,8 @@ const LEGEND_ITEMS: Array<{
 
 const VOTANTES_DIGITAL_FILTER = ["==", ["get", "id"], 1] as FilterSpecification;
 const VOTANTES_TERRITORIAL_FILTER = ["any", ["==", ["get", "id"], 2], ["!", ["has", "id"]]] as FilterSpecification;
-const PANELES_AVENIDAS_FILTER = ["==", ["get", "id"], 2] as FilterSpecification;
-const PANELES_CASAS_FILTER = ["==", ["get", "id"], 1] as FilterSpecification;
+const PANELES_AVENIDAS_FILTER = ["==", ["get", "id"], 1] as FilterSpecification;
+const PANELES_CASAS_FILTER = ["==", ["get", "id"], 2] as FilterSpecification;
 
 const getBounds = (collection: GeoJsonFeatureCollection) => {
   let minLng = Infinity;
@@ -137,10 +137,83 @@ const getBounds = (collection: GeoJsonFeatureCollection) => {
   };
 };
 
+const getGeometryBounds = (geometry: Geometry) => {
+  let minLng = Infinity;
+  let minLat = Infinity;
+  let maxLng = -Infinity;
+  let maxLat = -Infinity;
+
+  const visit = (coords: unknown) => {
+    if (!Array.isArray(coords)) return;
+    if (coords.length === 2 && coords.every((value) => typeof value === "number")) {
+      const [lng, lat] = coords as [number, number];
+      minLng = Math.min(minLng, lng);
+      minLat = Math.min(minLat, lat);
+      maxLng = Math.max(maxLng, lng);
+      maxLat = Math.max(maxLat, lat);
+      return;
+    }
+    coords.forEach((value) => {
+      visit(value);
+    });
+  };
+
+  const visitGeometry = (item: Geometry) => {
+    if (item.type === "GeometryCollection") {
+      item.geometries.forEach(visitGeometry);
+      return;
+    }
+    visit(item.coordinates);
+  };
+
+  visitGeometry(geometry);
+
+  return {
+    southWest: [minLng, minLat] as [number, number],
+    northEast: [maxLng, maxLat] as [number, number],
+  };
+};
+
+const getFeatureId = (value: GeoJsonProperties | null | undefined) => {
+  if (!value || typeof value.id !== "number") return null;
+  return value.id;
+};
+
+const getAverageCenter = (collection: GeoJsonFeatureCollection, matchId?: number | null) => {
+  let totalLng = 0;
+  let totalLat = 0;
+  let count = 0;
+
+  collection.features.forEach((feature) => {
+    if (feature.geometry.type !== "Point") return;
+    const id = getFeatureId(feature.properties);
+    if (matchId !== undefined && id !== matchId) return;
+    if (!Array.isArray(feature.geometry.coordinates)) return;
+    const [lng, lat] = feature.geometry.coordinates as [number, number];
+    totalLng += lng;
+    totalLat += lat;
+    count += 1;
+  });
+
+  if (!count) return null;
+  return [totalLng / count, totalLat / count] as [number, number];
+};
+
+const getLayerCenter = (data: MapData, layer: LayerKey) => {
+  if (layer === "actividades") return getAverageCenter(data.actividades);
+  if (layer === "votantes-digital") return getAverageCenter(data.votantes, 1);
+  if (layer === "votantes-territorial") return getAverageCenter(data.votantes, 2);
+  if (layer === "paneles-avenidas") return getAverageCenter(data.paneles, 1);
+  if (layer === "paneles-casas") return getAverageCenter(data.paneles, 2);
+  return null;
+};
+
 export default function GuillermoMap({ data, error = null }: GuillermoMapProps) {
   const mapRef = useRef<MapRef | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [mapReady, setMapReady] = useState(false);
   const [activeLayer, setActiveLayer] = useState<LayerKey | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     if (!data || !mapReady || !mapRef.current) return;
@@ -153,6 +226,42 @@ export default function GuillermoMap({ data, error = null }: GuillermoMapProps) 
 
   const getVisibility = (key: LayerKey) =>
     activeLayer && activeLayer !== key ? "none" : "visible";
+
+  useEffect(() => {
+    const handleChange = () => {
+      const isActive = document.fullscreenElement === containerRef.current;
+      setIsFullscreen(isActive);
+      mapRef.current?.resize();
+    };
+
+    document.addEventListener("fullscreenchange", handleChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleChange);
+    };
+  }, []);
+
+  const handleFullscreenToggle = () => {
+    const element = containerRef.current;
+    if (!element) return;
+    if (document.fullscreenElement === element) {
+      void document.exitFullscreen();
+      return;
+    }
+    void element.requestFullscreen();
+  };
+
+  const handleLegendClick = (key: LayerKey) => {
+    setActiveLayer((current) => {
+      const next = current === key ? null : key;
+      if (next && data && mapRef.current) {
+        const center = getLayerCenter(data, next);
+        if (center) {
+          mapRef.current.easeTo({ center, duration: 650 });
+        }
+      }
+      return next;
+    });
+  };
 
   return (
     <section
@@ -179,13 +288,25 @@ export default function GuillermoMap({ data, error = null }: GuillermoMapProps) 
       <div
         className="relative mt-4 h-[420px] w-full overflow-hidden rounded-2xl border"
         style={{ borderColor: "var(--border)" }}
+        ref={containerRef}
       >
         <MapLibreMap
           ref={mapRef}
           onLoad={() => setMapReady(true)}
+          onClick={(event) => {
+            if (!event.features?.length || !mapRef.current) return;
+            const geometry = event.features[0].geometry as Geometry | undefined;
+            if (!geometry) return;
+            const { southWest, northEast } = getGeometryBounds(geometry);
+            mapRef.current.fitBounds([southWest, northEast], {
+              padding: 40,
+              duration: 650,
+            });
+          }}
           initialViewState={{ longitude: -75.5, latitude: -9.2, zoom: 4.2 }}
           mapStyle={MAP_STYLE}
           attributionControl={false}
+          interactiveLayerIds={["departamentos-fill"]}
           style={{ width: "100%", height: "100%" }}
         >
           {data ? (
@@ -272,6 +393,18 @@ export default function GuillermoMap({ data, error = null }: GuillermoMapProps) 
             </>
           ) : null}
         </MapLibreMap>
+        <button
+          type="button"
+          onClick={handleFullscreenToggle}
+          className="absolute right-4 top-4 rounded-lg border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em]"
+          style={{
+            backgroundColor: "var(--card)",
+            borderColor: "var(--border)",
+            color: "var(--text-1)",
+          }}
+        >
+          {isFullscreen ? "Salir" : "Pantalla completa"}
+        </button>
         <div
           className="absolute left-4 top-4 rounded-xl border px-3 py-2 text-xs font-semibold"
           style={{
@@ -298,9 +431,7 @@ export default function GuillermoMap({ data, error = null }: GuillermoMapProps) 
                 <button
                   key={item.key}
                   type="button"
-                  onClick={() =>
-                    setActiveLayer((current) => (current === item.key ? null : item.key))
-                  }
+                  onClick={() => handleLegendClick(item.key)}
                   className="flex w-full items-center gap-2 rounded-lg border px-2 py-1 text-left text-[11px] font-semibold uppercase tracking-[0.18em] transition"
                   style={{
                     borderColor: isActive ? item.color : "var(--border)",
