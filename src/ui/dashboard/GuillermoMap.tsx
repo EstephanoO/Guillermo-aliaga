@@ -1,7 +1,12 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Map as MapLibreMap, Source, Layer, type MapRef } from "@vis.gl/react-maplibre";
+import {
+  Map as MapLibreMap,
+  Source,
+  Layer,
+  type MapRef,
+} from "@vis.gl/react-maplibre";
 import type { FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import type { FilterSpecification, StyleSpecification } from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
@@ -59,7 +64,12 @@ const LEGEND_ITEMS: Array<{
   color: string;
   shape: "dot" | "pill";
 }> = [
-  { key: "actividades", label: "Actividades", color: LAYER_COLORS.actividades, shape: "dot" },
+  {
+    key: "actividades",
+    label: "Actividades",
+    color: LAYER_COLORS.actividades,
+    shape: "dot",
+  },
   {
     key: "votantes-digital",
     label: "Votantes digitales",
@@ -87,23 +97,13 @@ const LEGEND_ITEMS: Array<{
 ];
 
 const VOTANTES_DIGITAL_FILTER = ["==", ["get", "id"], 1] as FilterSpecification;
-const VOTANTES_TERRITORIAL_FILTER = ["any", ["==", ["get", "id"], 2], ["!", ["has", "id"]]] as FilterSpecification;
+const VOTANTES_TERRITORIAL_FILTER = [
+  "any",
+  ["==", ["get", "id"], 2],
+  ["!", ["has", "id"]],
+] as FilterSpecification;
 const PANELES_AVENIDAS_FILTER = ["==", ["get", "id"], 1] as FilterSpecification;
 const PANELES_CASAS_FILTER = ["==", ["get", "id"], 2] as FilterSpecification;
-
-const expandBounds = (
-  bounds: { southWest: [number, number]; northEast: [number, number] },
-  padding = 0.8,
-) => {
-  const [minLng, minLat] = bounds.southWest;
-  const [maxLng, maxLat] = bounds.northEast;
-  const lngPadding = Math.max(0.6, (maxLng - minLng) * padding * 0.1);
-  const latPadding = Math.max(0.6, (maxLat - minLat) * padding * 0.1);
-  return [
-    [minLng - lngPadding, minLat - latPadding],
-    [maxLng + lngPadding, maxLat + latPadding],
-  ] as [[number, number], [number, number]];
-};
 
 const getBounds = (collection: GeoJsonFeatureCollection) => {
   let minLng = Infinity;
@@ -113,7 +113,10 @@ const getBounds = (collection: GeoJsonFeatureCollection) => {
 
   const visit = (coords: unknown) => {
     if (!Array.isArray(coords)) return;
-    if (coords.length === 2 && coords.every((value) => typeof value === "number")) {
+    if (
+      coords.length === 2 &&
+      coords.every((value) => typeof value === "number")
+    ) {
       const [lng, lat] = coords as [number, number];
       minLng = Math.min(minLng, lng);
       minLat = Math.min(minLat, lat);
@@ -159,7 +162,10 @@ const getGeometryBounds = (geometry: Geometry) => {
 
   const visit = (coords: unknown) => {
     if (!Array.isArray(coords)) return;
-    if (coords.length === 2 && coords.every((value) => typeof value === "number")) {
+    if (
+      coords.length === 2 &&
+      coords.every((value) => typeof value === "number")
+    ) {
       const [lng, lat] = coords as [number, number];
       minLng = Math.min(minLng, lng);
       minLat = Math.min(minLat, lat);
@@ -193,7 +199,10 @@ const getFeatureId = (value: GeoJsonProperties | null | undefined) => {
   return value.id;
 };
 
-const getAverageCenter = (collection: GeoJsonFeatureCollection, matchId?: number | null) => {
+const getAverageCenter = (
+  collection: GeoJsonFeatureCollection,
+  matchId?: number | null,
+) => {
   let totalLng = 0;
   let totalLat = 0;
   let count = 0;
@@ -216,13 +225,17 @@ const getAverageCenter = (collection: GeoJsonFeatureCollection, matchId?: number
 const getLayerCenter = (data: MapData, layer: LayerKey) => {
   if (layer === "actividades") return getAverageCenter(data.actividades);
   if (layer === "votantes-digital") return getAverageCenter(data.votantes, 1);
-  if (layer === "votantes-territorial") return getAverageCenter(data.votantes, 2);
+  if (layer === "votantes-territorial")
+    return getAverageCenter(data.votantes, 2);
   if (layer === "paneles-avenidas") return getAverageCenter(data.paneles, 1);
   if (layer === "paneles-casas") return getAverageCenter(data.paneles, 2);
   return null;
 };
 
-export default function GuillermoMap({ data, error = null }: GuillermoMapProps) {
+export default function GuillermoMap({
+  data,
+  error = null,
+}: GuillermoMapProps) {
   const mapRef = useRef<MapRef | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -232,8 +245,6 @@ export default function GuillermoMap({ data, error = null }: GuillermoMapProps) 
   useEffect(() => {
     if (!data || !mapReady || !mapRef.current) return;
     const baseBounds = getBounds(data.departamentos);
-    const expandedBounds = expandBounds(baseBounds);
-    mapRef.current.getMap().setMaxBounds(expandedBounds);
     mapRef.current.fitBounds([baseBounds.southWest, baseBounds.northEast], {
       padding: 28,
       duration: 0,
@@ -320,8 +331,6 @@ export default function GuillermoMap({ data, error = null }: GuillermoMapProps) 
             });
           }}
           initialViewState={{ longitude: -75.5, latitude: -9.2, zoom: 4.2 }}
-          minZoom={4}
-          maxZoom={9}
           mapStyle={MAP_STYLE}
           attributionControl={false}
           interactiveLayerIds={["departamentos-fill"]}
@@ -329,7 +338,11 @@ export default function GuillermoMap({ data, error = null }: GuillermoMapProps) 
         >
           {data ? (
             <>
-              <Source id="departamentos" type="geojson" data={data.departamentos}>
+              <Source
+                id="departamentos"
+                type="geojson"
+                data={data.departamentos}
+              >
                 <Layer
                   id="departamentos-fill"
                   type="fill"
@@ -458,7 +471,11 @@ export default function GuillermoMap({ data, error = null }: GuillermoMapProps) 
                   }}
                 >
                   <span
-                    className={item.shape === "pill" ? "h-2.5 w-4 rounded-sm" : "h-2.5 w-2.5 rounded-full"}
+                    className={
+                      item.shape === "pill"
+                        ? "h-2.5 w-4 rounded-sm"
+                        : "h-2.5 w-2.5 rounded-full"
+                    }
                     style={{ backgroundColor: item.color }}
                   />
                   <span>{item.label}</span>

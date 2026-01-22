@@ -5,11 +5,9 @@ const formatNumber = (value: number) =>
   new Intl.NumberFormat("en-US").format(value);
 
 export default function DashboardHeader() {
-  const potentialVoters = 1000;
-  const progressPercent = Math.min(
-    100,
-    (potentialVoters / voteGoal) * 100
-  );
+  const potentialVoters = 2000;
+  const projectedVotes = 1000;
+  const currentVotes = 0;
 
   return (
     <header className="border-b border-[color:var(--border)] bg-[color:var(--card)] shadow-[0_8px_20px_-16px_rgba(15,23,42,0.16)]">
@@ -45,15 +43,24 @@ export default function DashboardHeader() {
             </p>
             <p className="mt-2 text-xl font-semibold text-[color:var(--text-1)]">
               {formatNumber(potentialVoters)} / {formatNumber(voteGoal)}
-              <span className="ml-2 text-sm font-semibold text-[color:var(--text-2)]">
-                ({progressPercent.toFixed(1)}%)
-              </span>
             </p>
-            <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-[color:var(--surface-strong)]">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"
-                style={{ width: `${progressPercent}%` }}
-              />
+          </div>
+          <div className="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color:var(--text-1)]">
+              Proyección de votos
+            </p>
+            <p className="mt-2 text-xl font-semibold text-[color:var(--text-1)]">
+              {formatNumber(projectedVotes)} / {formatNumber(voteGoal)}
+            </p>
+          </div>
+          <div className="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3">
+            <div className="flex h-full flex-col justify-between">
+              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color:var(--text-1)]">
+                Votos
+              </p>
+              <p className="text-xl font-semibold text-[color:var(--text-1)]">
+                {formatNumber(currentVotes)} / {formatNumber(voteGoal)}
+              </p>
             </div>
           </div>
         </div>
