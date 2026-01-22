@@ -91,6 +91,20 @@ const VOTANTES_TERRITORIAL_FILTER = ["any", ["==", ["get", "id"], 2], ["!", ["ha
 const PANELES_AVENIDAS_FILTER = ["==", ["get", "id"], 1] as FilterSpecification;
 const PANELES_CASAS_FILTER = ["==", ["get", "id"], 2] as FilterSpecification;
 
+const expandBounds = (
+  bounds: { southWest: [number, number]; northEast: [number, number] },
+  padding = 0.8,
+) => {
+  const [minLng, minLat] = bounds.southWest;
+  const [maxLng, maxLat] = bounds.northEast;
+  const lngPadding = Math.max(0.6, (maxLng - minLng) * padding * 0.1);
+  const latPadding = Math.max(0.6, (maxLat - minLat) * padding * 0.1);
+  return [
+    [minLng - lngPadding, minLat - latPadding],
+    [maxLng + lngPadding, maxLat + latPadding],
+  ] as [[number, number], [number, number]];
+};
+
 const getBounds = (collection: GeoJsonFeatureCollection) => {
   let minLng = Infinity;
   let minLat = Infinity;
@@ -217,8 +231,10 @@ export default function GuillermoMap({ data, error = null }: GuillermoMapProps) 
 
   useEffect(() => {
     if (!data || !mapReady || !mapRef.current) return;
-    const { southWest, northEast } = getBounds(data.departamentos);
-    mapRef.current.fitBounds([southWest, northEast], {
+    const baseBounds = getBounds(data.departamentos);
+    const expandedBounds = expandBounds(baseBounds);
+    mapRef.current.getMap().setMaxBounds(expandedBounds);
+    mapRef.current.fitBounds([baseBounds.southWest, baseBounds.northEast], {
       padding: 28,
       duration: 0,
     });
@@ -304,6 +320,8 @@ export default function GuillermoMap({ data, error = null }: GuillermoMapProps) 
             });
           }}
           initialViewState={{ longitude: -75.5, latitude: -9.2, zoom: 4.2 }}
+          minZoom={4}
+          maxZoom={9}
           mapStyle={MAP_STYLE}
           attributionControl={false}
           interactiveLayerIds={["departamentos-fill"]}

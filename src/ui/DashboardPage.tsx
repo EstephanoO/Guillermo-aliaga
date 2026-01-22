@@ -222,6 +222,9 @@ export default function DashboardPage() {
         <div className="order-1 flex-1">
           <DashboardHeader />
           <div className="w-full px-4 pb-12 pt-6 md:px-6">
+            <div className="mb-6">
+              <GuillermoMap data={mapData} error={mapError} />
+            </div>
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
               <div
                 className="w-full rounded-xl border border-l-4 p-4"
@@ -489,9 +492,6 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </section>
-            </div>
-            <div className="mt-6">
-              <GuillermoMap data={mapData} error={mapError} />
             </div>
           </div>
         </div>

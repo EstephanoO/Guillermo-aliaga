@@ -5,8 +5,11 @@ const formatNumber = (value: number) =>
   new Intl.NumberFormat("en-US").format(value);
 
 export default function DashboardHeader() {
-  const potentialVoters = 28450;
-  const projectedVotes = 9320;
+  const potentialVoters = 1000;
+  const progressPercent = Math.min(
+    100,
+    (potentialVoters / voteGoal) * 100
+  );
 
   return (
     <header className="border-b border-[color:var(--border)] bg-[color:var(--card)] shadow-[0_8px_20px_-16px_rgba(15,23,42,0.16)]">
@@ -38,26 +41,20 @@ export default function DashboardHeader() {
         <div className="flex w-full flex-col gap-3 md:ml-5 md:w-auto md:flex-none md:flex-row">
           <div className="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color:var(--text-1)]">
-              Objetivo
-            </p>
-            <p className="mt-2 text-xl font-semibold text-[color:var(--text-1)]">
-              - / {formatNumber(voteGoal)}
-              <span className="ml-2 text-sm font-semibold text-[color:var(--text-2)]">
-                (0%)
-              </span>
-            </p>
-            <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-[color:var(--surface-strong)]" />
-          </div>
-          <div className="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color:var(--text-1)]">
               Potenciales votantes
             </p>
             <p className="mt-2 text-xl font-semibold text-[color:var(--text-1)]">
-              {formatNumber(potentialVoters)}
+              {formatNumber(potentialVoters)} / {formatNumber(voteGoal)}
+              <span className="ml-2 text-sm font-semibold text-[color:var(--text-2)]">
+                ({progressPercent.toFixed(1)}%)
+              </span>
             </p>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.28em] text-[color:var(--text-2)]">
-              Votos {formatNumber(projectedVotes)}
-            </p>
+            <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-[color:var(--surface-strong)]">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
         </div>
       </div>
