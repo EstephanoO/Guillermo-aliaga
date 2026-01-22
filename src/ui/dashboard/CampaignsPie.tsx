@@ -212,7 +212,7 @@ export default function CampaignsPie({ csvUrl, theme }: CampaignsPieProps) {
           </div>
         </div>
 
-        <div className="mt-4 flex flex-col gap-5">
+        <div className="mt-3 flex flex-col gap-4">
           {loading ? (
             <div className="grid gap-4 md:grid-cols-2">
               <div className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
@@ -234,22 +234,10 @@ export default function CampaignsPie({ csvUrl, theme }: CampaignsPieProps) {
           ) : (
             <>
               <div className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--text-1)]">
-                      Inversión total
-                    </p>
-                    <p className="mt-2 flex flex-wrap items-center gap-2 text-xl font-semibold text-[color:var(--text-1)]">
-                      <span>{formatPEN(14346.11)}</span>
-                      <span className="text-xs font-semibold text-[color:var(--text-2)]">|</span>
-                      <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--text-2)]">
-                        Interacciones
-                      </span>
-                    </p>
-                    <p className="mt-1 text-xl font-semibold text-[color:var(--text-1)]">
-                      {new Intl.NumberFormat("en-US").format(735920)}
-                    </p>
-                  </div>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[color:var(--text-2)]">
+                    Distribución
+                  </p>
                   <div className="flex items-center gap-2">
                     {([
                       { key: "gasto", label: "% gasto" },
@@ -274,7 +262,25 @@ export default function CampaignsPie({ csvUrl, theme }: CampaignsPieProps) {
                     })}
                   </div>
                 </div>
-                <div className="mt-2 h-56">
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[color:var(--text-2)]">
+                      Inversión total
+                    </p>
+                    <p className="mt-1 text-xl font-semibold text-[color:var(--text-1)]">
+                      {formatPEN(14346.11)}
+                    </p>
+                  </div>
+                  <div className="sm:text-right">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[color:var(--text-2)]">
+                      Interacciones
+                    </p>
+                    <p className="mt-1 text-xl font-semibold text-[color:var(--text-1)]">
+                      {new Intl.NumberFormat("en-US").format(735920)}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 h-44">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -303,7 +309,7 @@ export default function CampaignsPie({ csvUrl, theme }: CampaignsPieProps) {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="mt-3 space-y-2">
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
                   {indicatorData.map((row) => (
                     <div
                       key={row.indicador}

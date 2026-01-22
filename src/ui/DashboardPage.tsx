@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import DashboardHeader from "./dashboard/DashboardHeader";
 import CampaignsPie from "./dashboard/CampaignsPie";
+import GuillermoMap, { type MapData } from "./dashboard/GuillermoMap";
 import { csvUrl } from "../db/dashboardData";
 import {
   Area,
@@ -61,6 +62,8 @@ const calculateAverageReach = (series: DailyPoint[]) => {
 export default function DashboardPage() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [dailySeries, setDailySeries] = useState<DailyPoint[]>([]);
+  const [mapData, setMapData] = useState<MapData | null>(null);
+  const [mapError, setMapError] = useState<string | null>(null);
 
   const handleToggleTheme = () => {
     setTheme((current) => (current === "dark" ? "light" : "dark"));
@@ -109,6 +112,40 @@ export default function DashboardPage() {
         if (mounted) setDailySeries([]);
       }
     })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadMap = async () => {
+      try {
+        const datasets = [
+          "departamentos",
+          "registros_actividades",
+          "registros_votantes",
+          "registros_paneles",
+        ] as const;
+        const [departamentos, actividades, votantes, paneles] = await Promise.all(
+          datasets.map(async (name) => {
+            const response = await fetch(`/mapa-guillermo/${name}.geojson`);
+            if (!response.ok) {
+              throw new Error("No se pudo cargar los datos del mapa.");
+            }
+            return (await response.json()) as MapData["departamentos"];
+          }),
+        );
+        if (!mounted) return;
+        setMapData({ departamentos, actividades, votantes, paneles });
+      } catch (err) {
+        if (!mounted) return;
+        setMapError(err instanceof Error ? err.message : "Error cargando mapa");
+      }
+    };
+
+    loadMap();
 
     return () => {
       mounted = false;
@@ -396,7 +433,7 @@ export default function DashboardPage() {
             <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
               <CampaignsPie csvUrl={csvUrl} theme={theme} />
               <section
-                className="w-full rounded-xl border border-l-4 p-4"
+                className="w-full self-start rounded-xl border border-l-4 p-4"
                 style={{
                   backgroundColor: "var(--card)",
                   borderColor: "var(--border)",
@@ -413,8 +450,8 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </div>
-                <div className="mt-4 space-y-3">
-                  <div className="h-16">
+                <div className="mt-3 space-y-2">
+                  <div className="h-12">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={sentimentStack} layout="vertical" margin={{ left: 0, right: 16 }}>
                         <XAxis hide type="number" />
@@ -452,6 +489,9 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </section>
+            </div>
+            <div className="mt-6">
+              <GuillermoMap data={mapData} error={mapError} />
             </div>
           </div>
         </div>
