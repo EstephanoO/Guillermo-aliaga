@@ -1,0 +1,65 @@
+{
+  "summary": "Mayormente positivo y de apoyo al candidato, con mensajes de respaldo, felicitaciones y consignas, destacando presencia en Loreto/Iquitos. Existe una minoría crítica/negativa con ataques y acusaciones, pero el tono general es de movilización política y unidad.",
+  "sentiment": {
+    "positive": 72,
+    "neutral": 18,
+    "negative": 8,
+    "mixed": 2
+  },
+  "intent": {
+    "support": 63,
+    "questions": 6,
+    "requests": 5,
+    "complaints": 12,
+    "attacks": 11,
+    "spam": 3
+  },
+  "topTopics": [
+    {
+      "topic": "Apoyo político y consignas partidarias (Somos Perú / a paso de vencedores)",
+      "count": 38,
+      "examples": [
+        "Somos Perú un partido político bien organizado ! Un éxito total Iquitos es Somos Perú 💙♥️🤍🫶🏻",
+        "Somos peru a paso de vencedores no hay más ❤️🤍💙👍👍👍👍👍"
+      ]
+    },
+    {
+      "topic": "Presencia territorial y respaldo regional (Loreto / Iquitos)",
+      "count": 15,
+      "examples": [
+        "Nuestro próximo presidente de la República junto a nuestro próximo senador nacional somos Perú a paso de vencedores Loreto respaldo total.💪❤️❤️❤️❤️❤️",
+        "Extraordinario el apoyo y simpatía del partido en Loreto"
+      ]
+    },
+    {
+      "topic": "Felicitaciones, motivación y ánimo al candidato",
+      "count": 12,
+      "examples": [
+        "Felicitaciones Guillermo Aliaga",
+        "Bien Guillermo!!!! ❤️❤️❤️❤️❤️"
+      ]
+    },
+    {
+      "topic": "Críticas, ataques y desconfianza política (corrupción / mafia / cúpula)",
+      "count": 10,
+      "examples": [
+        "No pasa nada somos Perú en un partido de la mafia corrupta",
+        "Cuna de rateros, ladrones, vividores"
+      ]
+    },
+    {
+      "topic": "Apoyo explícito a figuras y lista electoral (George Forsyth / senador nacional #1)",
+      "count": 9,
+      "examples": [
+        "Todos Somos Perú George Forsyth Presidente Cesar Cobian Diputado por el Callao #1 Guillermo Aliaga Senador Nacional # 1 Jaky Loyola Senadora Nacional # 14",
+        "Somos Perú - Página Oficial ❤️ PARTIDO DEMOCRÁTICO 🫶 George Forsyth Sommer PRESIDENTE 2026 Guillermo Aliaga SENADOR NACIONAL escribe el nro 1"
+      ]
+    }
+  ],
+  "notableQuotes": [
+    "Es la mejor forma de demostrar porque votar por Uds. Hablando con el pueblo",
+    "No pasa nada somos Perú en un partido de la mafia corrupta",
+    "Extraordinario el apoyo y simpatía del partido en Loreto",
+    "Punche , garra , compromiso y veracidad."
+  ]
+}
