@@ -12,6 +12,7 @@ import {
   BarChart,
   Cell,
   CartesianGrid,
+  Line,
   ResponsiveContainer,
   ReferenceDot,
   Tooltip,
@@ -31,6 +32,7 @@ type DailyPoint = {
   dateKey: string;
   reach: number;
   interactions: number;
+  trend?: number;
 };
 
 type FacebookPost = {
@@ -59,11 +61,35 @@ const calculateAverageReach = (series: DailyPoint[]) => {
   return total / series.length;
 };
 
+const calculateTrendSeries = (series: DailyPoint[]) => {
+  if (!series.length) return [];
+  if (series.length === 1) return [{ ...series[0], trend: series[0].reach }];
+  const total = series.reduce(
+    (acc, item, index) => {
+      acc.sumX += index;
+      acc.sumY += item.reach;
+      acc.sumXY += index * item.reach;
+      acc.sumXX += index * index;
+      return acc;
+    },
+    { sumX: 0, sumY: 0, sumXY: 0, sumXX: 0 },
+  );
+  const count = series.length;
+  const denominator = count * total.sumXX - total.sumX * total.sumX;
+  const slope = denominator === 0 ? 0 : (count * total.sumXY - total.sumX * total.sumY) / denominator;
+  const intercept = (total.sumY - slope * total.sumX) / count;
+  return series.map((item, index) => ({
+    ...item,
+    trend: slope * index + intercept,
+  }));
+};
+
 export default function DashboardPage() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [dailySeries, setDailySeries] = useState<DailyPoint[]>([]);
   const [mapData, setMapData] = useState<MapData | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
+  const trendStroke = theme === "dark" ? "#f8fafc" : "#0f172a";
 
   const handleToggleTheme = () => {
     setTheme((current) => (current === "dark" ? "light" : "dark"));
@@ -156,6 +182,7 @@ export default function DashboardPage() {
     if (!current || item.reach > current.reach) return item;
     return current;
   }, null);
+  const trendSeries = calculateTrendSeries(dailySeries);
   const totalInteractionsDisplay = 23251;
   const cutoffDate = "2025-11-24";
   const beforeSeries = dailySeries.filter((item) => item.dateKey < cutoffDate);
@@ -259,11 +286,18 @@ export default function DashboardPage() {
                     <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: "#f97316" }} />
                     Interacciones
                   </span>
+                  <span className="flex items-center gap-2" style={{ color: "var(--text-2)" }}>
+                    <span
+                      className="h-0 w-6 border-t-2 border-dashed"
+                      style={{ borderColor: trendStroke }}
+                    />
+                    Tendencia
+                  </span>
                 </div>
                 <div className="mt-3 h-52">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
-                      data={dailySeries}
+                      data={trendSeries}
                       margin={{ left: 0, right: 12, top: 10, bottom: 0 }}
                     >
                       <defs>
@@ -281,6 +315,13 @@ export default function DashboardPage() {
                           <stop offset="0%" stopColor="#f97316" stopOpacity={0.4} />
                           <stop offset="100%" stopColor="#f97316" stopOpacity={0.04} />
                         </linearGradient>
+                        <filter id="trendGlow" x="-50%" y="-50%" width="200%" height="200%">
+                          <feGaussianBlur stdDeviation="2" result="blur" />
+                          <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                        </filter>
                       </defs>
                       <CartesianGrid stroke="rgba(37, 99, 235, 0.18)" vertical={false} />
                       <XAxis
@@ -320,6 +361,17 @@ export default function DashboardPage() {
                         strokeWidth={2.5}
                         fill="url(#interactionFill)"
                         name="Interacciones"
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="trend"
+                        stroke={trendStroke}
+                        strokeWidth={2.2}
+                        strokeOpacity={0.95}
+                        dot={false}
+                        strokeDasharray="4 4"
+                        name="Tendencia de alcance"
+                        filter={theme === "dark" ? "url(#trendGlow)" : undefined}
                       />
                       {reachPeak ? (
                         <ReferenceDot
