@@ -8,6 +8,9 @@ export default function DashboardHeader() {
   const potentialVoters = 2000;
   const projectedVotes = 1000;
   const currentVotes = 0;
+  const potentialPercent = (potentialVoters / voteGoal) * 100;
+  const projectedPercent = (projectedVotes / voteGoal) * 100;
+  const currentPercent = (currentVotes / voteGoal) * 100;
 
   return (
     <header className="border-b border-[color:var(--border)] bg-[color:var(--card)] shadow-[0_8px_20px_-16px_rgba(15,23,42,0.16)]">
@@ -41,26 +44,59 @@ export default function DashboardHeader() {
             <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color:var(--text-1)]">
               Potenciales votantes
             </p>
-            <p className="mt-2 text-xl font-semibold text-[color:var(--text-1)]">
-              {formatNumber(potentialVoters)} / {formatNumber(voteGoal)}
-            </p>
+            <div className="mt-2 flex items-center justify-between gap-3 text-xl font-semibold text-[color:var(--text-1)]">
+              <span>
+                {formatNumber(potentialVoters)} / {formatNumber(voteGoal)}
+              </span>
+              <span className="text-sm font-semibold text-[color:var(--text-2)]">
+                {potentialPercent.toFixed(1)}%
+              </span>
+            </div>
+            <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-[color:var(--surface-strong)]">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"
+                style={{ width: `${Math.min(100, potentialPercent)}%` }}
+              />
+            </div>
           </div>
           <div className="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color:var(--text-1)]">
               Proyección de votos
             </p>
-            <p className="mt-2 text-xl font-semibold text-[color:var(--text-1)]">
-              {formatNumber(projectedVotes)} / {formatNumber(voteGoal)}
-            </p>
+            <div className="mt-2 flex items-center justify-between gap-3 text-xl font-semibold text-[color:var(--text-1)]">
+              <span>
+                {formatNumber(projectedVotes)} / {formatNumber(voteGoal)}
+              </span>
+              <span className="text-sm font-semibold text-[color:var(--text-2)]">
+                {projectedPercent.toFixed(1)}%
+              </span>
+            </div>
+            <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-[color:var(--surface-strong)]">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400"
+                style={{ width: `${Math.min(100, projectedPercent)}%` }}
+              />
+            </div>
           </div>
           <div className="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3">
             <div className="flex h-full flex-col justify-between">
               <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[color:var(--text-1)]">
                 Votos
               </p>
-              <p className="text-xl font-semibold text-[color:var(--text-1)]">
-                {formatNumber(currentVotes)} / {formatNumber(voteGoal)}
-              </p>
+              <div className="flex w-full items-center justify-between gap-3 text-xl font-semibold text-[color:var(--text-1)]">
+                <span>
+                  {formatNumber(currentVotes)} / {formatNumber(voteGoal)}
+                </span>
+                <span className="ml-3 text-sm font-semibold text-[color:var(--text-2)]">
+                  {currentPercent.toFixed(1)}%
+                </span>
+              </div>
+              <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-[color:var(--surface-strong)]">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-orange-500 to-amber-400"
+                  style={{ width: `${Math.min(100, currentPercent)}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
