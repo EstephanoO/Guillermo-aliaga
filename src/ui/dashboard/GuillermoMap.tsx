@@ -311,6 +311,18 @@ export default function GuillermoMap({
             Capas de actividades, votantes y paneles
           </p>
         </div>
+        <button
+          type="button"
+          onClick={handleFullscreenToggle}
+          className="ml-auto inline-flex items-center rounded-lg border px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] md:hidden"
+          style={{
+            backgroundColor: "var(--card)",
+            borderColor: "var(--border)",
+            color: "var(--text-1)",
+          }}
+        >
+          {isFullscreen ? "Salir" : "Pantalla completa"}
+        </button>
       </div>
       <div
         className="relative mt-4 h-[420px] w-full overflow-hidden rounded-2xl border"
@@ -427,7 +439,7 @@ export default function GuillermoMap({
         <button
           type="button"
           onClick={handleFullscreenToggle}
-          className="absolute right-4 top-4 rounded-lg border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em]"
+          className="absolute right-4 top-4 hidden rounded-lg border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] md:inline-flex"
           style={{
             backgroundColor: "var(--card)",
             borderColor: "var(--border)",
@@ -437,7 +449,7 @@ export default function GuillermoMap({
           {isFullscreen ? "Salir" : "Pantalla completa"}
         </button>
         <div
-          className="absolute left-4 top-4 rounded-xl border px-3 py-2 text-xs font-semibold"
+          className="absolute left-4 top-4 rounded-xl border px-2 py-1 text-[10px] font-semibold md:px-3 md:py-2 md:text-xs"
           style={{
             backgroundColor: "var(--card)",
             borderColor: "var(--border)",
@@ -454,7 +466,7 @@ export default function GuillermoMap({
             />
             <span className="uppercase tracking-[0.18em]">Departamentos</span>
           </div>
-          <div className="mt-3 space-y-2">
+          <div className="mt-2 space-y-2 md:mt-3">
             {LEGEND_ITEMS.map((item) => {
               const isActive = activeLayer === item.key;
               const isMuted = activeLayer && !isActive;
@@ -463,7 +475,7 @@ export default function GuillermoMap({
                   key={item.key}
                   type="button"
                   onClick={() => handleLegendClick(item.key)}
-                  className="flex w-full items-center gap-2 rounded-lg border px-2 py-1 text-left text-[11px] font-semibold uppercase tracking-[0.18em] transition"
+                  className="flex w-full items-center gap-2 rounded-lg border px-2 py-1 text-left text-[10px] font-semibold uppercase tracking-[0.18em] transition md:text-[11px]"
                   style={{
                     borderColor: isActive ? item.color : "var(--border)",
                     color: isMuted ? "var(--text-2)" : "var(--text-1)",
