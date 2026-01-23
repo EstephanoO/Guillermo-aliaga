@@ -270,11 +270,24 @@ export default function GuillermoMap({
   const handleFullscreenToggle = () => {
     const element = containerRef.current;
     if (!element) return;
-    if (document.fullscreenElement === element) {
-      void document.exitFullscreen();
+    const isActive = document.fullscreenElement === element;
+    const exitFullscreen =
+      document.exitFullscreen ??
+      ((document as Document & { webkitExitFullscreen?: () => Promise<void> })
+        .webkitExitFullscreen ??
+        null);
+    const requestFullscreen =
+      element.requestFullscreen ??
+      ((element as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> })
+        .webkitRequestFullscreen ??
+        null);
+
+    if (isActive) {
+      if (exitFullscreen) void exitFullscreen.call(document);
       return;
     }
-    void element.requestFullscreen();
+
+    if (requestFullscreen) void requestFullscreen.call(element);
   };
 
   const handleLegendClick = (key: LayerKey) => {
