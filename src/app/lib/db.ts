@@ -3,12 +3,20 @@ import "server-only";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 
-const databaseUrl = process.env.DATABASE_URL;
+let cachedDb: ReturnType<typeof drizzle> | null = null;
 
-if (!databaseUrl) {
-  throw new Error("Missing DATABASE_URL for Neon connection.");
-}
+export const getDb = () => {
+  if (cachedDb) {
+    return cachedDb;
+  }
 
-const sql = neon(databaseUrl);
+  const databaseUrl = process.env.DATABASE_URL;
 
-export const db = drizzle(sql);
+  if (!databaseUrl) {
+    throw new Error("Missing DATABASE_URL for Neon connection.");
+  }
+
+  const sql = neon(databaseUrl);
+  cachedDb = drizzle(sql);
+  return cachedDb;
+};

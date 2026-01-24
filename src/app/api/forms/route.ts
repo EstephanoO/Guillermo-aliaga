@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { desc, sql } from "drizzle-orm";
-import { db } from "../../lib/db";
+import { getDb } from "../../lib/db";
 import { forms } from "../../lib/schema";
 
 type FormRow = {
@@ -18,6 +18,7 @@ type FormRow = {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const candidate = searchParams.get("candidate")?.trim().toLowerCase();
+  const db = getDb();
 
   const baseQuery = db
     .select({
