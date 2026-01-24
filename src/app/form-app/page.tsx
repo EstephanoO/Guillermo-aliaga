@@ -20,7 +20,7 @@ export default function FormAppPage() {
 
         <div className="mt-12 flex w-full items-center justify-center">
           <a
-            href="https://github.com/EstephanoO/gobernar-territorio/releases/download/v1.0.0/goberna-territorio.apk"
+            href="https://github.com/EstephanoO/gobernar-territorio/releases/download/v1.0.0/territorio.apk"
             className="group relative w-full max-w-md rounded-full border border-white/10 bg-white/5 px-8 py-6 text-lg font-semibold uppercase tracking-[0.2em] text-white shadow-[0_20px_60px_-30px_rgba(255,255,255,0.5)] transition duration-300 hover:-translate-y-1 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             download
           >
