@@ -67,7 +67,7 @@ const toLonLat = (row: FormRow) => {
     const [longitude, latitude] = proj4(projection, "EPSG:4326", [row.x, row.y]);
     if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) return null;
     return [longitude, latitude] as [number, number];
-  } catch (error) {
+  } catch {
     return null;
   }
 };

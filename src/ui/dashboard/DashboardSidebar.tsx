@@ -32,15 +32,18 @@ export default function DashboardSidebar({ summaryCards }: DashboardSidebarProps
   const sortedContacts = CONTACTOS_FORMULARIOS.slice().sort((a, b) =>
     a.dateKey.localeCompare(b.dateKey),
   );
-  let cumulativeContacts = 0;
-  const contactTimeline = sortedContacts.map((item) => {
-    cumulativeContacts += item.leads;
-    return {
+  const contactTimeline = sortedContacts.reduce<
+    { dateKey: string; nuevos: number; acumulado: number }[]
+  >((acc, item) => {
+    const previousTotal = acc.length ? acc[acc.length - 1].acumulado : 0;
+    const acumulado = previousTotal + item.leads;
+    acc.push({
       dateKey: item.dateKey,
       nuevos: item.leads,
-      acumulado: cumulativeContacts,
-    };
-  });
+      acumulado,
+    });
+    return acc;
+  }, []);
   const latestContact = contactTimeline[contactTimeline.length - 1];
   const totalContacts = latestContact?.acumulado ?? 0;
   const latestContactsDelta = latestContact?.nuevos ?? 0;

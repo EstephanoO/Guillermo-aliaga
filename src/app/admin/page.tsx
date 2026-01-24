@@ -1,36 +1,30 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import type { AuthUser } from "../../ui/auth/auth";
-import {
-  clearStoredUser,
-  getStoredUser,
-} from "../../ui/auth/auth";
+import { useEffect } from "react";
+import { clearStoredUser, getStoredUser } from "../../ui/auth/auth";
 
 export default function AdminPage() {
   const router = useRouter();
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const user = getStoredUser();
 
   useEffect(() => {
-    const storedUser = getStoredUser();
-    if (!storedUser) {
+    if (!user) {
       router.replace("/login");
       return;
     }
-    if (storedUser.id !== "admin") {
-      router.replace(storedUser.route);
+    if (user.id !== "admin") {
+      router.replace(user.route);
       return;
     }
-    setUser(storedUser);
-  }, [router]);
+  }, [router, user]);
 
   const handleLogout = () => {
     clearStoredUser();
     router.replace("/login");
   };
 
-  if (!user) return null;
+  if (!user || user.id !== "admin") return null;
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-slate-950 px-6 text-slate-100">

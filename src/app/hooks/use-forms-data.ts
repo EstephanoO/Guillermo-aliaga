@@ -27,7 +27,7 @@ export const useFormsData = (candidate?: string) => {
         setRows(data.rows ?? []);
         setStatus("ready");
         setUpdatedAt(new Date());
-      } catch (error) {
+      } catch {
         if (!isActive) return;
         setStatus("error");
       }

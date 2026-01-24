@@ -1,37 +1,31 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import type { AuthUser } from "../../ui/auth/auth";
-import {
-  clearStoredUser,
-  getStoredUser,
-} from "../../ui/auth/auth";
+import { useEffect } from "react";
+import { clearStoredUser, getStoredUser } from "../../ui/auth/auth";
 import DashboardPage from "../../ui/DashboardPage";
 
 export default function GuillermoPage() {
   const router = useRouter();
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const user = getStoredUser();
 
   useEffect(() => {
-    const storedUser = getStoredUser();
-    if (!storedUser) {
+    if (!user) {
       router.replace("/login");
       return;
     }
-    if (storedUser.id !== "guillermo") {
-      router.replace(storedUser.route);
+    if (user.id !== "guillermo") {
+      router.replace(user.route);
       return;
     }
-    setUser(storedUser);
-  }, [router]);
+  }, [router, user]);
 
   const handleLogout = () => {
     clearStoredUser();
     router.replace("/login");
   };
 
-  if (!user) return null;
+  if (!user || user.id !== "guillermo") return null;
 
   return (
     <div className="relative">
