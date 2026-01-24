@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { CONTACTOS_FORMULARIOS } from "../../db/constants/dashboard";
 import { voteGoal } from "../../db/dashboardData";
 
 const formatNumber = (value: number) =>
@@ -8,6 +9,7 @@ export default function DashboardHeader() {
   const potentialVoters = 2000;
   const projectedVotes = 1000;
   const currentVotes = 0;
+  const totalContacts = CONTACTOS_FORMULARIOS.reduce((sum, item) => sum + item.leads, 0);
   const potentialPercent = (potentialVoters / voteGoal) * 100;
   const projectedPercent = (projectedVotes / voteGoal) * 100;
   const currentPercent = (currentVotes / voteGoal) * 100;
@@ -26,14 +28,28 @@ export default function DashboardHeader() {
           />
         </div>
         <div className="flex flex-col">
-          <h1 className="text-lg font-semibold uppercase tracking-[0.12em] text-[color:var(--text-1)] md:text-xl">
-            Guillermo Aliaga
-          </h1>
-          <p className="mt-1 text-sm font-semibold text-[color:var(--text-1)]">
-            Partido Democrático Somos Perú
-          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-lg font-semibold uppercase tracking-[0.12em] text-[color:var(--text-1)] md:text-xl">
+              Rocio Porras
+            </h1>
+            <div
+              className="rounded-xl border px-3 py-2"
+              style={{ backgroundColor: "var(--surface)", borderColor: "var(--border)" }}
+            >
+              <p
+                className="text-[10px] font-semibold uppercase tracking-[0.24em]"
+                style={{ color: "var(--text-2)" }}
+              >
+                Contactos conseguidos
+              </p>
+              <p className="mt-1 text-2xl font-semibold" style={{ color: "var(--text-1)" }}>
+                {formatNumber(totalContacts)}
+              </p>
+            </div>
+          </div>
+          <p className="mt-1 text-sm font-semibold text-[color:var(--text-1)]">Somos Perú</p>
           <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-[color:var(--text-2)]">
-            Senador Nacional #1
+            Rocio Porras · Senadora Nacional #4
           </p>
           <span className="mt-2 inline-flex w-fit items-center rounded-full border border-blue-200/70 bg-blue-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-blue-700 dark:border-blue-400/30 dark:bg-blue-500/10 dark:text-blue-200">
             En crecimiento
